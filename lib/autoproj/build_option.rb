@@ -73,10 +73,15 @@ module Autoproj
         def ask(current_value, doc = nil)
             value, = ensure_value(current_value)
 
-            STDOUT.print "  #{doc || self.doc} [#{value}] "
-            STDOUT.flush
-            answer = STDIN.readline.chomp
-            answer = value if answer == ""
+            if (ENV["AUTOPROJ_NONINTERACTIVE"] == "1")
+                anwser = value
+            else
+                STDOUT.print "  #{doc || self.doc} [#{value}] "
+                STDOUT.flush
+                answer = STDIN.readline.chomp
+                answer = value if answer == ""
+            end
+
             validate(answer)
         rescue InputError => e
             Autoproj.message("invalid value: #{e.message}", :red)
